@@ -85,22 +85,15 @@ jQuery(function ($) {
       //});
       
       $('#new-todo').on('keyup', this.newTodoUpdate.bind(this));
-			//$('#toggle-all').on('change', this.toggleAll.bind(this));
       $('#toggle-all').on('change', this.toggleAllUpdate.bind(this));
-
-      //$('#toggle-all').on('change', whatIsThis)
-			//$('#footer').on('click', '#clear-completed', this.destroyCompleted.bind(this));
-      	$('#footer').on('click', '#clear-completed', 
+      $('#footer').on('click', '#clear-completed', 
                        this.destroyCompletedUpdate.bind(this));
 
       // Using event delegation.Method chaining.
 			$('#todo-list')
-				//.on('change', '.toggle', this.toggle.bind(this))
         .on('change', '.toggle', this.toggleUpdate.bind(this))
-
 				.on('dblclick', 'label', this.edit.bind(this))
 				.on('keyup', '.edit', this.editKeyup.bind(this))
-				//.on('focusout', '.edit', this.update.bind(this))
         .on('focusout', '.edit', this.amendTodoList.bind(this))
 				.on('click', '.destroy', this.destroyUpdate.bind(this));
       },
@@ -195,9 +188,8 @@ jQuery(function ($) {
 				title: val,
 				completed: false
 			});
-
+      
 			$input.val('');
-
 			view.render();
 		},
 		toggle: function (e) {
@@ -243,10 +235,7 @@ jQuery(function ($) {
 		},
     saveTodos: function(e){
       var $clickDestroyButton = $(e.target).find('destroy');
-      //if (e.which === ESCAPE_KEY || e.which === ENTER_KEY || $clickDestroyButton) {
-      //if ($clickDestroyButton) {
-        util.store('todos-jquery', this.todos);
-      //}  
+      util.store('todos-jquery', this.todos);
     }, 
       
 		destroy: function (e) {
