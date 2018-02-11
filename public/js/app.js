@@ -23,7 +23,6 @@ jQuery(function ($) {
 				}
 				uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
 			}
-
 			return uuid;
 		},
 		pluralize: function (count, word) {
@@ -63,72 +62,55 @@ jQuery(function ($) {
 			this.todoTemplate = Handlebars.compile($('#todo-template').html());
 			this.footerTemplate = Handlebars.compile($('#footer-template').html());
 			this.bindEvents();
-
 			this.router = new Router({
 				'/:filter': function (filter) {
 					this.filter = filter;
 					view.render();
-          //this.saveTodos.bind(this);
 				}.bind(this)
 			}).init('/all');
-      console.log(this.router)
-      
 		},
 		bindEvents: function () {
-      function whatIsThis(){
-        console.log(this)
-      }
-      
-			//$('#new-todo').on('keyup', function() {
-      //  this.create.bind(this);
-      //  this.saveTodos.bind(this);
-      //});
-      
       $('#new-todo').on('keyup', this.newTodoUpdate.bind(this));
       $('#toggle-all').on('change', this.toggleAllUpdate.bind(this));
       $('#footer').on('click', '#clear-completed', 
                        this.destroyCompletedUpdate.bind(this));
-
-      // Using event delegation.Method chaining.
+      // Using event delegation. Method chaining.
 			$('#todo-list')
         .on('change', '.toggle', this.toggleUpdate.bind(this))
 				.on('dblclick', 'label', this.edit.bind(this))
 				.on('keyup', '.edit', this.editKeyup.bind(this))
-        .on('focusout', '.edit', this.amendTodoList.bind(this))
+        .on('focusout', '.edit', this.amendTodoListUpdate.bind(this))
 				.on('click', '.destroy', this.destroyUpdate.bind(this));
       },
-		  destroyUpdate: function (e) {
+		  destroyUpdate: function(e) {
         this.destroy(e);
-        this.saveTodos(e);
-        },
+        this.saveTodos();
+      },
       newTodoUpdate: function(e) {
         this.create(e);
-        this.saveTodos(e);
+        this.saveTodos();
       },
       toggleAllUpdate: function(e) {
         this.toggleAll(e);
-        this.saveTodos(e);
+        this.saveTodos();
       },
       destroyCompletedUpdate: function(e){
         this.destroyCompleted();
-        this.saveTodos(e);
+        this.saveTodos();
       }, 
       toggleUpdate: function(e) {
         this.toggle(e);
-        this.saveTodos(e);
+        this.saveTodos();
       }, 
-      amendTodoList: function(e) {
+      amendTodoListUpdate: function(e) {
         this.update(e);
-        this.saveTodos(e);
+        this.saveTodos();
       }, 
-		
 		toggleAll: function (e) {
 			var isChecked = $(e.target).prop('checked');
-
 			this.todos.forEach(function (todo) {
 				todo.completed = isChecked;
 			});
-
 			view.render();
 		},
 		getActiveTodos: function () {
@@ -149,7 +131,6 @@ jQuery(function ($) {
 			if (this.filter === 'completed') {
 				return this.getCompletedTodos();
 			}
-
 			return this.todos;
 		},
 		destroyCompleted: function () {
@@ -200,21 +181,16 @@ jQuery(function ($) {
 		edit: function (e) {
 			var $input = $(e.target).closest('li').addClass('editing').find('.edit');  
 			$input.val($input.val()).focus().setCursorPosition($input.val().length);
-      // var $todoText = $input.val();
-      // $input.val($todoText);
-      // $input.focus().setCursorPosition($todoText.length);
 		},
 		editKeyup: function (e) {
 			if (e.which === ENTER_KEY) {
         // Hitting enter takes you out of edit mode.
 				e.target.blur(); 
 			}
-
 			if (e.which === ESCAPE_KEY) {
 				$(e.target).data('abort', true).blur();
 			}
 		},
-    // FIND A 
 		update: function (e) {
 			var el = e.target;
 			var $el = $(el);
@@ -224,20 +200,17 @@ jQuery(function ($) {
 				this.destroy(e);
 				return;
 			}
-
 			if ($el.data('abort')) {
 				$el.data('abort', false);
 			} else {
 				this.todos[this.indexFromEl(el)].title = val;
 			}
-
 			view.render();
 		},
-    saveTodos: function(e){
-      var $clickDestroyButton = $(e.target).find('destroy');
+    saveTodos: function(){
+      // var $clickDestroyButton = $(e.target).find('destroy');
       util.store('todos-jquery', this.todos);
-    }, 
-      
+    },  
 		destroy: function (e) {
       // indexFromEl() converts the element clicked into an index
 			this.todos.splice(this.indexFromEl(e.target), 1);
@@ -245,7 +218,6 @@ jQuery(function ($) {
 			view.render();
 		}
 	};
-  
   var view = {
     	render: function () {
         var todos = App.getFilteredTodos();
@@ -254,9 +226,8 @@ jQuery(function ($) {
         $('#toggle-all').prop('checked', App.getActiveTodos().length === 0);
         this.renderFooter();
         $('#new-todo').focus();
-          },
-
-          renderFooter: function () {
+      },
+      renderFooter: function () {
         var todoCount = App.todos.length;
         var activeTodoCount = App.getActiveTodos().length;
         var template = App.footerTemplate({
@@ -268,6 +239,5 @@ jQuery(function ($) {
         $('#footer').toggle(todoCount > 0).html(template);
 		  }
   	};
-
 	App.init();
 });
